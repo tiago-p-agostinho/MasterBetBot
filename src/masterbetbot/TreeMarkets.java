@@ -3,14 +3,11 @@ package masterbetbot;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.layout.VBox;
- 
+
 public class TreeMarkets extends Application {
     TreeView<String> treeView = new TreeView<>();
     
@@ -66,24 +63,13 @@ public class TreeMarkets extends Application {
                 depNode.getChildren().add(empLeaf);
             }
         }
- 
-     
-        //stage.setTitle("Tree View Sample");
-       // VBox box = new VBox();
-        //final Scene scene = new Scene(box, 400, 300);
-        //scene.setFill(Color.LIGHTGRAY);
- 
-        treeView = new TreeView<>(rootNode);
-        
-        //box.getChildren().add(treeView);
-        //stage.setScene(scene);
-        //stage.show();  
+
+      treeView = new TreeView<>(rootNode);
     }
  
     public TreeView getTreeView(){
       return treeView;
     }
-    
     
     public static class Employee {
  

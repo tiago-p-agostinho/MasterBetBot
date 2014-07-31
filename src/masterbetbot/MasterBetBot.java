@@ -1,16 +1,17 @@
 package masterbetbot;
  
 import javafx.application.Application;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.VBox; 
 import javafx.scene.paint.Color; 
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ public class MasterBetBot extends Application {
   public static void main(String[] args) {
       launch(args);
   }
+  
   @Override
   public void start(Stage primaryStage) throws Exception {
       double width;
@@ -38,26 +40,41 @@ public class MasterBetBot extends Application {
      // Scene scene = new Scene(root, width, height, Color.BLACK);
      // scene.getStylesheets().add(MasterBetBot.class.getResource("projectcss.css").toExternalForm());
      
-      BorderPane bp = new BorderPane();
+         BorderPane bp = new BorderPane();
     
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
       
+        MenuBarMBB menuBarMBB = new MenuBarMBB();
+        menuBarMBB.start(primaryStage);
+        MenuBar menuBar = menuBarMBB.getMenuBar();
+        GridPane.setConstraints(menuBar,0,0,50,1);
+        
+        Label userNameLabel = new Label("UserName:");
+        userNameLabel.prefWidth(10);
+        userNameLabel.setAlignment(Pos.CENTER_RIGHT);
+        Label userNameField = new Label("MRtinho");
+        
+        GridPane.setConstraints(userNameLabel, 0, 1, 1, 1);
+        GridPane.setConstraints(userNameField, 1, 1, 1 ,1);
+        
+        Label balanceLabel = new Label("Balance:");
+        Label balanceField = new Label("NaN");
+       
+    
         ScrollPaneForTreeMarkets spftm = new ScrollPaneForTreeMarkets();
         spftm.start(primaryStage);
         ScrollPane sp = spftm.getScrollPane();
-        GridPane.setConstraints(sp, 0, 4, 1, 50);
+        GridPane.setConstraints(sp, 0, 5, 1, 10);
 
         CreateTabButton ctb = new CreateTabButton();
         ctb.start(primaryStage);
         TabPane tabPane = ctb.getTabPane();
-        GridPane.setConstraints(tabPane, 1, 4, 1, 40);
+        GridPane.setConstraints(tabPane, 1, 5, 1, 10);
 
-        grid.getChildren().addAll(sp,tabPane);
-        //grid.add(sp,1,0);
-        //grid.add(tabPane,2,0);
+        grid.getChildren().addAll(userNameLabel,userNameField,menuBar,sp,tabPane);
         bp.setCenter(grid);
         
         VBox root = new VBox();
