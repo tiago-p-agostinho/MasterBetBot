@@ -2,13 +2,11 @@ package masterbetbot;
 
 import java.util.Arrays;
 import java.util.List;
-import javafx.application.Application;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.stage.Stage;
 import javafx.beans.property.SimpleStringProperty;
 
-public class TreeMarkets extends Application {
+public class TreeMarkets {
     TreeView<String> treeView = new TreeView<>();
     
     List<Employee> employees = Arrays.<Employee>asList(
@@ -37,13 +35,8 @@ public class TreeMarkets extends Application {
    
     TreeItem<String> rootNode = 
         new TreeItem<>("MyCompany Human Resources", null);
-   
-   public static void main(String[] args) {
-        launch(args);
-    }
- 
-    @Override
-    public void start(Stage stage) {
+  
+    public void start() {
       for (Employee employee : employees) {
             TreeItem<String> empLeaf = new TreeItem<>(employee.getName());
             empLeaf.setExpanded(true);

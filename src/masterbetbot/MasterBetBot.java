@@ -2,7 +2,6 @@ package masterbetbot;
  
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -37,50 +36,52 @@ public class MasterBetBot extends Application {
       
       width=primaryStage.getX();
       height=primaryStage.getY();
-     // Scene scene = new Scene(root, width, height, Color.BLACK);
-     // scene.getStylesheets().add(MasterBetBot.class.getResource("projectcss.css").toExternalForm());
-     
-         BorderPane bp = new BorderPane();
     
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(0, 10, 0, 10));
+      BorderPane bp = new BorderPane();
+      GridPane grid = new GridPane();
+      grid.setHgap(10);
+      grid.setVgap(10);
+      grid.setPadding(new Insets(0, 10, 0, 10));
       
-        MenuBarMBB menuBarMBB = new MenuBarMBB();
-        menuBarMBB.start(primaryStage);
-        MenuBar menuBar = menuBarMBB.getMenuBar();
-        GridPane.setConstraints(menuBar,0,0,50,1);
+      MenuBarMBB menuBarMBB = new MenuBarMBB();
+      menuBarMBB.start(primaryStage);
+      MenuBar menuBar = menuBarMBB.getMenuBar();
+      GridPane.setConstraints(menuBar,0,0,50,1);
         
-        Label userNameLabel = new Label("UserName:");
-        userNameLabel.prefWidth(10);
-        userNameLabel.setAlignment(Pos.CENTER_RIGHT);
-        Label userNameField = new Label("MRtinho");
+      Label userNameLabel = new Label("UserName:");
+      GridPane.setConstraints(userNameLabel, 0, 1);
+      Label userNameField = new Label("MRtinho");
+      GridPane.setConstraints(userNameField, 1, 1);  
         
-        GridPane.setConstraints(userNameLabel, 0, 1, 1, 1);
-        GridPane.setConstraints(userNameField, 1, 1, 1 ,1);
-        
-        Label balanceLabel = new Label("Balance:");
-        Label balanceField = new Label("NaN");
-       
+      Label balanceLabel = new Label("Balance:");
+      GridPane.setConstraints(balanceLabel, 6, 1);
+      Label balanceField = new Label("NaN");
+      GridPane.setConstraints(balanceField, 7, 1);
     
-        ScrollPaneForTreeMarkets spftm = new ScrollPaneForTreeMarkets();
-        spftm.start(primaryStage);
-        ScrollPane sp = spftm.getScrollPane();
-        GridPane.setConstraints(sp, 0, 5, 1, 10);
+      ScrollPaneForTreeMarkets spftm = new ScrollPaneForTreeMarkets();
+      spftm.start();
+      ScrollPane sp = spftm.getScrollPane();
+      GridPane.setConstraints(sp, 0, 3, 8, 10);
 
-        CreateTabButton ctb = new CreateTabButton();
-        ctb.start(primaryStage);
-        TabPane tabPane = ctb.getTabPane();
-        GridPane.setConstraints(tabPane, 1, 5, 1, 10);
-
-        grid.getChildren().addAll(userNameLabel,userNameField,menuBar,sp,tabPane);
-        bp.setCenter(grid);
+      CreateTabButton ctb = new CreateTabButton();
+      ctb.start(primaryStage);
+      TabPane tabPane = ctb.getTabPane();
+      GridPane.setConstraints(tabPane, 8, 3, 28, 10);
+      
+      ScrollPaneForAccordionPane spap = new ScrollPaneForAccordionPane();
+      spap.start();
+      ScrollPane scroll = spap.getScrollPane();
+      GridPane.setConstraints(scroll, 36, 3, 12, 10);
+      
+      grid.getChildren().addAll(menuBar,userNameLabel,userNameField,balanceLabel,
+                balanceField,sp,tabPane,scroll);
+      bp.setCenter(grid);
         
         VBox root = new VBox();
         root.getChildren().addAll(grid);
         Scene scene = new Scene(root, width, height, Color.BLACK);
-        
+        //String css = this.getClass().getResource("projectcss.css").toExternalForm(); 
+        //scene.getStylesheets().add(css);
         primaryStage.setScene(scene);
         primaryStage.show();
       /*
