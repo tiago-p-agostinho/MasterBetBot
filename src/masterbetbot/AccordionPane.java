@@ -1,10 +1,5 @@
 package masterbetbot;
 
-/**
- *
- * @author tiagoagostinho
- */
-
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;

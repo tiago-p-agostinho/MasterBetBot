@@ -1,13 +1,18 @@
 package masterbetbot;
  
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox; 
@@ -16,8 +21,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class MasterBetBot extends Application {
- 
-  public static void main(String[] args) {
+ private TreeView treeView;
+ private ListView listView;
+ private GridPane grid;
+ public static void main(String[] args) {
       launch(args);
   }
   
@@ -38,7 +45,7 @@ public class MasterBetBot extends Application {
       height=primaryStage.getY();
     
       BorderPane bp = new BorderPane();
-      GridPane grid = new GridPane();
+      grid = new GridPane();
       grid.setHgap(10);
       grid.setVgap(10);
       grid.setPadding(new Insets(0, 10, 0, 10));
@@ -48,20 +55,45 @@ public class MasterBetBot extends Application {
       MenuBar menuBar = menuBarMBB.getMenuBar();
       GridPane.setConstraints(menuBar,0,0,50,1);
         
+      TreeMarkets tm = new TreeMarkets();
+      tm.start();
+      treeView = tm.getTreeView();
+      GridPane.setConstraints(treeView, 0, 3, 8, 10);
+      
+      SearchBar searchBar = new SearchBar(this);
+      searchBar.start();
+      TextField textField = searchBar.getTextField();
+      GridPane.setConstraints(textField,0,1,5,1);
+            
+      Label stakeLabel = new Label("Stake:");
+      GridPane.setConstraints(stakeLabel, 6, 1);
+      Button stakeButton = new Button("Back");
+      GridPane.setConstraints(stakeButton, 7, 1, 2, 1); 
+      stakeButton.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
+      stakeButton.setPrefWidth(80);
+      stakeButton.setOnAction((ActionEvent event)->{
+           if((stakeButton.getText()).equals("Back")){
+              stakeButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+              stakeButton.setText("Lay");
+           }
+           else{
+              stakeButton.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
+              stakeButton.setText("Back"); 
+           }
+        });
+      
       Label userNameLabel = new Label("UserName:");
-      GridPane.setConstraints(userNameLabel, 0, 1);
+      GridPane.setConstraints(userNameLabel, 9, 1);
       Label userNameField = new Label("MRtinho");
-      GridPane.setConstraints(userNameField, 1, 1);  
+      GridPane.setConstraints(userNameField, 10, 1);  
         
       Label balanceLabel = new Label("Balance:");
-      GridPane.setConstraints(balanceLabel, 6, 1);
+      GridPane.setConstraints(balanceLabel, 11, 1);
       Label balanceField = new Label("NaN");
-      GridPane.setConstraints(balanceField, 7, 1);
+      GridPane.setConstraints(balanceField, 12, 1);
     
-      ScrollPaneForTreeMarkets spftm = new ScrollPaneForTreeMarkets();
-      spftm.start();
-      ScrollPane sp = spftm.getScrollPane();
-      GridPane.setConstraints(sp, 0, 3, 8, 10);
+      listView = searchBar.getList();
+      GridPane.setConstraints(listView, 0, 3, 8, 10);
 
       CreateTabButton ctb = new CreateTabButton();
       ctb.start(primaryStage);
@@ -72,9 +104,10 @@ public class MasterBetBot extends Application {
       spap.start();
       ScrollPane scroll = spap.getScrollPane();
       GridPane.setConstraints(scroll, 36, 3, 12, 10);
-      
-      grid.getChildren().addAll(menuBar,userNameLabel,userNameField,balanceLabel,
-                balanceField,sp,tabPane,scroll);
+     
+      grid.getChildren().addAll(menuBar,stakeLabel,stakeButton,
+              textField,userNameLabel,userNameField, balanceLabel,balanceField,
+              treeView,tabPane,scroll);
       bp.setCenter(grid);
         
         VBox root = new VBox();
@@ -130,6 +163,18 @@ public class MasterBetBot extends Application {
       //primaryStage.show();
       //Login login = new Login();
       //login.start(primaryStage);
+  }
+
+  public TreeView getTreeView(){
+      return treeView;
+  }
+
+  public ListView getListView(){
+      return listView;
+  }
+
+  public GridPane getGridPane(){
+      return grid;
   }
 } 
   /*
