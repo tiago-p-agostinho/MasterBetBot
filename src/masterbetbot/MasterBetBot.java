@@ -3,13 +3,16 @@ package masterbetbot;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
@@ -46,29 +49,50 @@ public class MasterBetBot extends Application {
     
       BorderPane bp = new BorderPane();
       grid = new GridPane();
-      grid.setHgap(10);
-      grid.setVgap(10);
+      grid.setHgap(5);
+      grid.setVgap(5);
       grid.setPadding(new Insets(0, 10, 0, 10));
       
       MenuBarMBB menuBarMBB = new MenuBarMBB();
       menuBarMBB.start(primaryStage);
       MenuBar menuBar = menuBarMBB.getMenuBar();
-      GridPane.setConstraints(menuBar,0,0,50,1);
+      GridPane.setConstraints(menuBar,0,0,30,1);
         
       TreeMarkets tm = new TreeMarkets();
       tm.start();
       treeView = tm.getTreeView();
-      GridPane.setConstraints(treeView, 0, 3, 8, 10);
+      GridPane.setConstraints(treeView, 1, 3, 6, 10);
+      
+      final Separator sepVert1 = new Separator();
+      sepVert1.setOrientation(Orientation.VERTICAL);
+      sepVert1.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVert1, 0, 1, 1, 1);
+      GridPane.setRowSpan(sepVert1, 1);
+      grid.getChildren().add(sepVert1);
       
       SearchBar searchBar = new SearchBar(this);
       searchBar.start();
       TextField textField = searchBar.getTextField();
-      GridPane.setConstraints(textField,0,1,5,1);
+      GridPane.setConstraints(textField,1,1,5,1);
             
+      final Separator sepVert2 = new Separator();
+      sepVert2.setOrientation(Orientation.VERTICAL);
+      sepVert2.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVert2, 6, 1, 1, 1);
+      GridPane.setRowSpan(sepVert2, 1);
+      grid.getChildren().add(sepVert2);
+      
       Label stakeLabel = new Label("Stake:");
-      GridPane.setConstraints(stakeLabel, 6, 1);
+      GridPane.setConstraints(stakeLabel, 7, 1);
+      
+      DoubleTextField euroText = new DoubleTextField("2.00");
+      GridPane.setConstraints(euroText, 8, 1, 2, 1);
+       
+      Label eurosLabel = new Label("€");
+      GridPane.setConstraints(eurosLabel, 10, 1, 1, 1);
+      
       Button stakeButton = new Button("Back");
-      GridPane.setConstraints(stakeButton, 7, 1, 2, 1); 
+      GridPane.setConstraints(stakeButton, 11, 1, 1, 1); 
       stakeButton.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
       stakeButton.setPrefWidth(80);
       stakeButton.setOnAction((ActionEvent event)->{
@@ -82,32 +106,60 @@ public class MasterBetBot extends Application {
            }
         });
       
+      final Separator sepVert3 = new Separator();
+      sepVert3.setOrientation(Orientation.VERTICAL);
+      sepVert3.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVert3, 12, 1, 1, 1);
+      GridPane.setRowSpan(sepVert3, 1);
+      grid.getChildren().add(sepVert3);
+      
       Label userNameLabel = new Label("UserName:");
-      GridPane.setConstraints(userNameLabel, 9, 1);
+      GridPane.setConstraints(userNameLabel, 20, 1);
       Label userNameField = new Label("MRtinho");
-      GridPane.setConstraints(userNameField, 10, 1);  
+      GridPane.setConstraints(userNameField, 21, 1);  
         
       Label balanceLabel = new Label("Balance:");
-      GridPane.setConstraints(balanceLabel, 11, 1);
+      GridPane.setConstraints(balanceLabel, 28, 1);
       Label balanceField = new Label("NaN");
-      GridPane.setConstraints(balanceField, 12, 1);
+      GridPane.setConstraints(balanceField, 33, 1);
+      
+      final Separator sepHor1 = new Separator();
+      sepHor1.setValignment(VPos.CENTER);
+     // sepHor1.setPrefWidth(100);
+      GridPane.setConstraints(sepHor1, 0, 2, 30, 1);
+      GridPane.setColumnSpan(sepHor1, 40);
+      grid.getChildren().add(sepHor1);
     
       listView = searchBar.getList();
-      GridPane.setConstraints(listView, 0, 3, 8, 10);
+      GridPane.setConstraints(listView, 1, 3, 6, 10);
+      
+      final Separator sepHor2 = new Separator();
+      sepHor2.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepHor2, 0, 14, 8, 1);
+      GridPane.setColumnSpan(sepHor2, 9);
+      grid.getChildren().add(sepHor2);
+      
+      final Separator sepVert4 = new Separator();
+      sepVert4.setOrientation(Orientation.VERTICAL);
+      sepVert4.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVert4, 0, 3, 1, 10);
+      GridPane.setRowSpan(sepVert4, 10);
+      grid.getChildren().add(sepVert4);
+      
 
       CreateTabButton ctb = new CreateTabButton();
       ctb.start(primaryStage);
       TabPane tabPane = ctb.getTabPane();
-      GridPane.setConstraints(tabPane, 8, 3, 28, 10);
+      GridPane.setConstraints(tabPane, 9, 3, 20, 10);
       
       ScrollPaneForAccordionPane spap = new ScrollPaneForAccordionPane();
       spap.start();
       ScrollPane scroll = spap.getScrollPane();
-      GridPane.setConstraints(scroll, 36, 3, 12, 10);
+      GridPane.setConstraints(scroll, 36, 3, 11, 10);
      
       grid.getChildren().addAll(menuBar,stakeLabel,stakeButton,
               textField,userNameLabel,userNameField, balanceLabel,balanceField,
-              treeView,tabPane,scroll);
+              treeView,tabPane,scroll, eurosLabel, euroText);
       bp.setCenter(grid);
         
         VBox root = new VBox();
