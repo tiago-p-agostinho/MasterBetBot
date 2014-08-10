@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
@@ -16,6 +17,8 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox; 
@@ -56,43 +59,67 @@ public class MasterBetBot extends Application {
       MenuBarMBB menuBarMBB = new MenuBarMBB();
       menuBarMBB.start(primaryStage);
       MenuBar menuBar = menuBarMBB.getMenuBar();
-      GridPane.setConstraints(menuBar,0,0,30,1);
+      GridPane.setConstraints(menuBar,0,0,51,1);
         
+      Image img = new Image("file:\\C:\\Users\\tiagoagostinho\\"
+              + "Documents\\NetBeansProjects\\MasterBetBot\\src\\logo_png.png");
+      ImageView imgView = new ImageView(img);
+      imgView.setFitWidth(210);
+      imgView.setFitHeight(70);
+      GridPane.setConstraints(imgView, 1, 1, 8, 3);
+      grid.getChildren().add(imgView);
+      
       TreeMarkets tm = new TreeMarkets();
       tm.start();
       treeView = tm.getTreeView();
-      GridPane.setConstraints(treeView, 1, 3, 6, 10);
+      GridPane.setConstraints(treeView, 1, 7, 8, 115);
       
-      final Separator sepVert1 = new Separator();
-      sepVert1.setOrientation(Orientation.VERTICAL);
-      sepVert1.setValignment(VPos.CENTER);
-      GridPane.setConstraints(sepVert1, 0, 1, 1, 1);
-      GridPane.setRowSpan(sepVert1, 1);
-      grid.getChildren().add(sepVert1);
+      final Separator sepVertLeftImage = new Separator();
+      sepVertLeftImage.setOrientation(Orientation.VERTICAL);
+      sepVertLeftImage.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertLeftImage, 0, 1, 1, 5);
+      GridPane.setRowSpan(sepVertLeftImage, 5);
+      grid.getChildren().add(sepVertLeftImage);
+      
+      final Separator sepVertRightTreeView = new Separator();
+      sepVertRightTreeView.setOrientation(Orientation.VERTICAL);
+      sepVertRightTreeView.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertRightTreeView, 9, 5, 1, 1);
+      GridPane.setRowSpan(sepVertRightTreeView, 118);
+      grid.getChildren().add(sepVertRightTreeView);
+      
+      final Separator sepVertRightImage = new Separator();
+      sepVertRightImage.setOrientation(Orientation.VERTICAL);
+      sepVertRightImage.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertRightImage, 9, 1, 1, 1);
+      GridPane.setRowSpan(sepVertRightImage, 5);
+      grid.getChildren().add(sepVertRightImage);
       
       SearchBar searchBar = new SearchBar(this);
       searchBar.start();
       TextField textField = searchBar.getTextField();
-      GridPane.setConstraints(textField,1,1,5,1);
+      textField.setPrefWidth(225);
+      GridPane.setConstraints(textField,10,1,6,1);
             
-      final Separator sepVert2 = new Separator();
-      sepVert2.setOrientation(Orientation.VERTICAL);
-      sepVert2.setValignment(VPos.CENTER);
-      GridPane.setConstraints(sepVert2, 6, 1, 1, 1);
-      GridPane.setRowSpan(sepVert2, 1);
-      grid.getChildren().add(sepVert2);
+      final Separator sepVertLeftSearcBar= new Separator();
+      sepVertLeftSearcBar.setOrientation(Orientation.VERTICAL);
+      sepVertLeftSearcBar.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertLeftSearcBar, 16, 1, 1, 1);
+      GridPane.setRowSpan(sepVertLeftSearcBar, 5);
+      grid.getChildren().add(sepVertLeftSearcBar);
       
       Label stakeLabel = new Label("Stake:");
-      GridPane.setConstraints(stakeLabel, 7, 1);
+      GridPane.setConstraints(stakeLabel, 17, 1);
       
       DoubleTextField euroText = new DoubleTextField("2.00");
-      GridPane.setConstraints(euroText, 8, 1, 2, 1);
+      euroText.setPrefWidth(75);
+      GridPane.setConstraints(euroText, 18, 1, 1, 1);
        
       Label eurosLabel = new Label("€");
-      GridPane.setConstraints(eurosLabel, 10, 1, 1, 1);
+      GridPane.setConstraints(eurosLabel, 19, 1, 1, 1);
       
       Button stakeButton = new Button("Back");
-      GridPane.setConstraints(stakeButton, 11, 1, 1, 1); 
+      GridPane.setConstraints(stakeButton, 20, 1, 1, 1); 
       stakeButton.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
       stakeButton.setPrefWidth(80);
       stakeButton.setOnAction((ActionEvent event)->{
@@ -106,60 +133,84 @@ public class MasterBetBot extends Application {
            }
         });
       
-      final Separator sepVert3 = new Separator();
-      sepVert3.setOrientation(Orientation.VERTICAL);
-      sepVert3.setValignment(VPos.CENTER);
-      GridPane.setConstraints(sepVert3, 12, 1, 1, 1);
-      GridPane.setRowSpan(sepVert3, 1);
-      grid.getChildren().add(sepVert3);
+      final Separator sepVertAfterButton = new Separator();
+      sepVertAfterButton.setOrientation(Orientation.VERTICAL);
+      sepVertAfterButton.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertAfterButton, 21, 1, 1, 1);
+      GridPane.setRowSpan(sepVertAfterButton, 5);
+      grid.getChildren().add(sepVertAfterButton);
       
       Label userNameLabel = new Label("UserName:");
-      GridPane.setConstraints(userNameLabel, 20, 1);
+      GridPane.setConstraints(userNameLabel, 22, 1);
       Label userNameField = new Label("MRtinho");
-      GridPane.setConstraints(userNameField, 21, 1);  
+      userNameField.setPrefWidth(75);
+      GridPane.setConstraints(userNameField, 23, 1);  
+      
+      final Separator sepVertLeftUserName = new Separator();
+      sepVertLeftUserName.setOrientation(Orientation.VERTICAL);
+      sepVertLeftUserName.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertLeftUserName, 24, 1, 1, 1);
+      GridPane.setRowSpan(sepVertLeftUserName, 5);
+      grid.getChildren().add(sepVertLeftUserName);
         
       Label balanceLabel = new Label("Balance:");
-      GridPane.setConstraints(balanceLabel, 28, 1);
-      Label balanceField = new Label("NaN");
-      GridPane.setConstraints(balanceField, 33, 1);
-      
-      final Separator sepHor1 = new Separator();
-      sepHor1.setValignment(VPos.CENTER);
-     // sepHor1.setPrefWidth(100);
-      GridPane.setConstraints(sepHor1, 0, 2, 30, 1);
-      GridPane.setColumnSpan(sepHor1, 40);
-      grid.getChildren().add(sepHor1);
+      GridPane.setConstraints(balanceLabel, 22, 3);
+      Label balanceField = new Label("NaN"+" €");
+      balanceField.setAlignment(Pos.CENTER_LEFT);
+      balanceField.setPrefWidth(50);
+      GridPane.setConstraints(balanceField, 23, 3);
+       
+      final Separator sepHorUnderDataUser = new Separator();
+      sepHorUnderDataUser.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepHorUnderDataUser, 0, 5, 51, 1);
+      GridPane.setColumnSpan(sepHorUnderDataUser, 51);
+      grid.getChildren().add(sepHorUnderDataUser);
     
       listView = searchBar.getList();
-      GridPane.setConstraints(listView, 1, 3, 6, 10);
+      GridPane.setConstraints(listView, 1, 7, 8, 14);
       
-      final Separator sepHor2 = new Separator();
-      sepHor2.setValignment(VPos.CENTER);
-      GridPane.setConstraints(sepHor2, 0, 14, 8, 1);
-      GridPane.setColumnSpan(sepHor2, 9);
-      grid.getChildren().add(sepHor2);
+      final Separator sepHorUnderTreeView = new Separator();
+      sepHorUnderTreeView.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepHorUnderTreeView, 0, 122, 51, 1);
+      GridPane.setColumnSpan(sepHorUnderTreeView, 51);
+      grid.getChildren().add(sepHorUnderTreeView);
       
-      final Separator sepVert4 = new Separator();
-      sepVert4.setOrientation(Orientation.VERTICAL);
-      sepVert4.setValignment(VPos.CENTER);
-      GridPane.setConstraints(sepVert4, 0, 3, 1, 10);
-      GridPane.setRowSpan(sepVert4, 10);
-      grid.getChildren().add(sepVert4);
+      final Separator sepVertLeftTreeView = new Separator();
+      sepVertLeftTreeView.setOrientation(Orientation.VERTICAL);
+      sepVertLeftTreeView.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertLeftTreeView, 0, 5, 1, 13);
+      GridPane.setRowSpan(sepVertLeftTreeView, 118);
+      grid.getChildren().add(sepVertLeftTreeView);
       
-
       CreateTabButton ctb = new CreateTabButton();
       ctb.start(primaryStage);
       TabPane tabPane = ctb.getTabPane();
-      GridPane.setConstraints(tabPane, 9, 3, 20, 10);
+      tabPane.setPrefWidth(500);
+      tabPane.setPrefHeight(300);
+      GridPane.setConstraints(tabPane, 10, 6, 20, 116);
+      
+      final Separator sepVertRightTabPane = new Separator();
+      sepVertRightTabPane.setOrientation(Orientation.VERTICAL);
+      sepVertRightTabPane.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertRightTabPane, 31, 5, 1, 1);
+      GridPane.setRowSpan(sepVertRightTabPane, 118);
+      grid.getChildren().add(sepVertRightTabPane);
       
       ScrollPaneForAccordionPane spap = new ScrollPaneForAccordionPane();
       spap.start();
       ScrollPane scroll = spap.getScrollPane();
-      GridPane.setConstraints(scroll, 36, 3, 11, 10);
+      scroll.setPrefWidth(250);
+      GridPane.setConstraints(scroll, 32, 6, 17, 116);
+      
+      final Separator sepVertRightAccordion = new Separator();
+      sepVertRightAccordion.setOrientation(Orientation.VERTICAL);
+      sepVertRightAccordion.setValignment(VPos.CENTER);
+      GridPane.setConstraints(sepVertRightAccordion, 50, 5, 1, 1);
+      GridPane.setRowSpan(sepVertRightAccordion, 118);
+      grid.getChildren().add(sepVertRightAccordion);
      
-      grid.getChildren().addAll(menuBar,stakeLabel,stakeButton,
-              textField,userNameLabel,userNameField, balanceLabel,balanceField,
-              treeView,tabPane,scroll, eurosLabel, euroText);
+      grid.getChildren().addAll(menuBar,stakeLabel,stakeButton,userNameLabel,userNameField, balanceLabel,balanceField,
+              treeView,tabPane, scroll, textField, eurosLabel, euroText);
       bp.setCenter(grid);
         
         VBox root = new VBox();
