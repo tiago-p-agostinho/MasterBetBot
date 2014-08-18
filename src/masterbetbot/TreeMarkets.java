@@ -2,12 +2,17 @@ package masterbetbot;
 
 import java.util.Arrays;
 import java.util.List;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.input.MouseEvent;
 
 public class TreeMarkets {
     TreeView<String> treeView = new TreeView<>();
+    private MasterBetBot master;
     
     List<Employee> employees = Arrays.<Employee>asList(
             new Employee("Ethan Williams", "Sales Department"),
@@ -41,6 +46,10 @@ public class TreeMarkets {
     TreeItem<String> rootNode = 
         new TreeItem<>("MyCompany Human Resources", null);
   
+    public TreeMarkets(MasterBetBot mbb){
+        this.master=mbb;
+    }
+    
     public void start() {
       for (Employee employee : employees) {
             TreeItem<String> empLeaf = new TreeItem<>(employee.getName());
@@ -63,6 +72,21 @@ public class TreeMarkets {
         }
 
       treeView = new TreeView<>(rootNode);
+      treeView.setOnMouseClicked((MouseEvent mouseEvent) -> {
+          if(mouseEvent.getClickCount() == 2){
+              TreeItem<String> item = (TreeItem<String>) treeView.getSelectionModel().
+                      getSelectedItem();
+              System.out.println("Selected Text : " + item.getValue());
+              
+              // Create New Tab
+              Tab tabData = new Tab();
+              TabPane tabPane = master.getTabPane();
+              Label tabALabel = new Label("Test");
+              tabData.setGraphic(tabALabel);
+              
+             tabPane.getTabs().add(tabData);
+          }
+      });
     }
  
     public TreeView getTreeView(){

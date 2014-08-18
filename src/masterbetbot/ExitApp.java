@@ -7,8 +7,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -16,18 +14,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import masterbetbot.Login.Response;
 
-public class Login extends Application{
-
-    @Override
+public class ExitApp{   
     public void start(Stage primaryStage) throws Exception {
-         Response showMessageDialog = showConfirmDialog(primaryStage, "Login" );
-        
-    }
-
-public enum Response { OK, CANCEL };
-private static Response buttonSelected = Response.CANCEL;
-
+        showConfirmDialog(primaryStage, "MasterBetBot" );
+     }
+    
 static class Dialog extends Stage {
     public Dialog( String title, Stage owner, Scene scene) {
         setTitle( title );
@@ -56,41 +49,26 @@ public static Response showConfirmDialog( Stage owner, String title) {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        TextField username = new TextField(); 
-        username.setPromptText("Username");
-        PasswordField password = new PasswordField(); 
-        password.setPromptText("Password");
-
-         Button OKButton = new Button("OK");
+       
+         Button OKButton = new Button("Yes");
         OKButton.setOnAction((ActionEvent event)->{
-           final String usernameResult = username.getText();
-           final String passwordResult = password.getText();
            System.exit(0);
         });
         
-        Button CancelButton = new Button("Cancel");
+        Button CancelButton = new Button("No");
         CancelButton.setOnAction((ActionEvent event)->{
-           final String usernameResult = username.getText();
-           final String passwordResult = password.getText();
            dial.hide();
            owner.show();
         });
         
-        grid.add(new Label("Username:"), 0, 0);
-        grid.add(username, 1, 0);
-        grid.add(new Label("Password:"), 0, 1);
-        grid.add(password, 1, 1);
-        grid.add(OKButton, 0,2);
-        grid.add(CancelButton, 1,2);
+       grid.add(new Label("Do you really exit?"),0,1);
+       grid.add(OKButton, 0,2);
+       grid.add(CancelButton, 1,2);
 
     bp.setCenter( grid );
     HBox msg = new HBox();
     vb.getChildren().addAll( msg, bp );
     dial.showDialog();
-    return buttonSelected;
+    return null;
 }
-
-public static void main(String[] args) {
-        launch(args);
-    }
 }

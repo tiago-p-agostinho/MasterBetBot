@@ -27,6 +27,7 @@ public class SearchBar {
                 }
             });
         txt.setFocusTraversable(false);
+        
         txt.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0,

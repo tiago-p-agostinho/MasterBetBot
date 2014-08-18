@@ -1,7 +1,12 @@
 package masterbetbot;
  
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -20,16 +25,18 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.GridPane; 
 import javafx.scene.layout.VBox; 
 import javafx.scene.paint.Color; 
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class MasterBetBot extends Application {
  private TreeView treeView;
  private ListView listView;
  private GridPane grid;
+ private TabPane tabPane;
  public static void main(String[] args) {
       launch(args);
   }
@@ -47,6 +54,22 @@ public class MasterBetBot extends Application {
       primaryStage.setWidth(bounds.getWidth());
       primaryStage.setHeight(bounds.getHeight());
       
+    
+
+primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+    @Override
+    public void handle(WindowEvent event) {
+        ExitApp exit = new ExitApp();
+        try {
+            exit.start(primaryStage);
+        } catch (Exception ex) {
+            Logger.getLogger(MasterBetBot.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        event.consume();
+    }
+});
+   
+      
       width=primaryStage.getX();
       height=primaryStage.getY();
     
@@ -61,18 +84,20 @@ public class MasterBetBot extends Application {
       MenuBar menuBar = menuBarMBB.getMenuBar();
       GridPane.setConstraints(menuBar,0,0,51,1);
         
-      Image img = new Image("file:\\C:\\Users\\tiagoagostinho\\"
-              + "Documents\\NetBeansProjects\\MasterBetBot\\src\\logo_png.png");
+      String workingDir = System.getProperty("user.dir");
+      Image img = new Image("file:\\" + workingDir + "\\src\\logo_png.png");
+      
       ImageView imgView = new ImageView(img);
-      imgView.setFitWidth(210);
+      imgView.setFitWidth(225);
       imgView.setFitHeight(70);
       GridPane.setConstraints(imgView, 1, 1, 8, 3);
       grid.getChildren().add(imgView);
       
-      TreeMarkets tm = new TreeMarkets();
+      TreeMarkets tm = new TreeMarkets(this);
       tm.start();
       treeView = tm.getTreeView();
       GridPane.setConstraints(treeView, 1, 7, 8, 115);
+    
       
       final Separator sepVertLeftImage = new Separator();
       sepVertLeftImage.setOrientation(Orientation.VERTICAL);
@@ -167,7 +192,7 @@ public class MasterBetBot extends Application {
       grid.getChildren().add(sepHorUnderDataUser);
     
       listView = searchBar.getList();
-      GridPane.setConstraints(listView, 1, 7, 8, 14);
+      GridPane.setConstraints(listView, 1, 7, 8, 115);
       
       final Separator sepHorUnderTreeView = new Separator();
       sepHorUnderTreeView.setValignment(VPos.CENTER);
@@ -184,15 +209,15 @@ public class MasterBetBot extends Application {
       
       CreateTabButton ctb = new CreateTabButton();
       ctb.start(primaryStage);
-      TabPane tabPane = ctb.getTabPane();
-      tabPane.setPrefWidth(500);
+      tabPane = ctb.getTabPane();
+      tabPane.setPrefWidth(525);
       tabPane.setPrefHeight(300);
-      GridPane.setConstraints(tabPane, 10, 6, 20, 116);
+      GridPane.setConstraints(tabPane, 10, 6, 28, 116);
       
       final Separator sepVertRightTabPane = new Separator();
       sepVertRightTabPane.setOrientation(Orientation.VERTICAL);
       sepVertRightTabPane.setValignment(VPos.CENTER);
-      GridPane.setConstraints(sepVertRightTabPane, 31, 5, 1, 1);
+      GridPane.setConstraints(sepVertRightTabPane, 39, 5, 1, 1);
       GridPane.setRowSpan(sepVertRightTabPane, 118);
       grid.getChildren().add(sepVertRightTabPane);
       
@@ -200,7 +225,7 @@ public class MasterBetBot extends Application {
       spap.start();
       ScrollPane scroll = spap.getScrollPane();
       scroll.setPrefWidth(250);
-      GridPane.setConstraints(scroll, 32, 6, 17, 116);
+      GridPane.setConstraints(scroll, 40, 6, 10, 116);
       
       final Separator sepVertRightAccordion = new Separator();
       sepVertRightAccordion.setOrientation(Orientation.VERTICAL);
@@ -216,11 +241,11 @@ public class MasterBetBot extends Application {
         VBox root = new VBox();
         root.getChildren().addAll(grid);
         Scene scene = new Scene(root, width, height, Color.BLACK);
-        //String css = this.getClass().getResource("projectcss.css").toExternalForm(); 
-        //scene.getStylesheets().add(css);
+        scene.getStylesheets().clear();
+       
         primaryStage.setScene(scene);
-        primaryStage.show();
-      /*
+   
+        /*
       TabPane tabPane = new TabPane();
       BorderPane mainPane = new BorderPane();
      
@@ -263,9 +288,9 @@ public class MasterBetBot extends Application {
       root.getChildren().add(mainPane);
       primaryStage.setScene(scene); */
       
-      //primaryStage.show();
-      //Login login = new Login();
-      //login.start(primaryStage);
+      primaryStage.show();
+      Login login = new Login();
+      login.start(primaryStage);
   }
 
   public TreeView getTreeView(){
@@ -279,57 +304,10 @@ public class MasterBetBot extends Application {
   public GridPane getGridPane(){
       return grid;
   }
+
+  public TabPane getTabPane(){
+      return tabPane;
+  }
 } 
-  /*
-  treeView.setOnMouseClicked(new EventHandler<MouseEvent>()
-{
-    @Override
-    public void handle(MouseEvent mouseEvent)
-    {            
-        if(mouseEvent.getClickCount() == 2)
-        {
-            TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
-            System.out.println("Selected Text : " + item.getValue());
+ 
 
-            // Create New Tab
-            Tab tabdata = new Tab();
-            Label tabALabel = new Label("Test");
-            tabdata.setGraphic(tabALabel);
-
-            DataStage.addNewTab(tabdata);
-        }
-    }
-}); evento quando clicar numa treeview e abrir tab */
-
-/* verificar quando sair
- primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
-
-      public void handle(WindowEvent event) {
-        final Stage dialog = new Stage();
-        Label label =new Label("Really exit?");
-        Button okButton = new Button("OK");
-        okButton.setOnAction(new EventHandler<ActionEvent>() {
-
-          public void handle(ActionEvent event) {
-            dialog.setVisible(false);
-          }
-        });
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-
-          public void handle(ActionEvent event) {
-            primaryStage.setVisible(true);
-            dialog.setVisible(false);
-          }
-        });
-        FlowPane pane = new FlowPane(10, 10);
-        pane.setAlignment(Pos.CENTER);
-        pane.getChildren().addAll(okButton, cancelButton);
-        VBox vBox = new VBox(10);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(label, pane);
-        Scene scene1 = new Scene(vBox);
-        dialog.setScene(scene1);
-        dialog.setVisible(true);
-      }
-    }); */
