@@ -4,44 +4,41 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 
 public class SearchBar {
    private final ObservableList<String> entries = FXCollections.observableArrayList();    
    private final ListView list = new ListView();
    private final TextField txt = new TextField();
    private final MasterBetBot master;
-   
+   String newValue;
+   String oldValue;
    public SearchBar(MasterBetBot master){
        this.master=master;
    }
     public void start() {  
+        
         txt.setPromptText("Search");
         txt.textProperty().addListener(
             new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, 
                                     Object oldVal, Object newVal) {
+                    newValue = (String) newVal;
+                    oldValue = (String) oldVal;
+                    setTreeList();
                     handleSearchByKey((String)oldVal, (String)newVal);
+                   
                 }
             });
         txt.setFocusTraversable(false);
-        
-        txt.focusedProperty().addListener(new ChangeListener<Boolean>(){
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0,
-                    Boolean oldPropertyValue, Boolean newPropertyValue){
-                if (newPropertyValue){
-            (master.getGridPane()).getChildren().remove(master.getTreeView());
-            (master.getGridPane()).getChildren().add(master.getListView());
-                }
-                else{
-            (master.getGridPane()).getChildren().remove(master.getListView());
-            (master.getGridPane()).getChildren().add(master.getTreeView());
-                }
-         }
-         });
+       
         // Populate the list's entries
         for ( int i = 0; i < 100; i++ ) {
             entries.add("Item " + i);
@@ -51,8 +48,30 @@ public class SearchBar {
         entries.add("Ashley Bruno");
         entries.add("Brandon Bruno");
         list.setItems( entries );
+        list.setOnMouseClicked((MouseEvent mouseEvent) -> {
+          if(mouseEvent.getClickCount() == 2){
+              // Create New Tab
+              Tab tabData = new Tab();
+              TabPane tabPane = master.getTabPane();
+              Label tabALabel = new Label("Test");
+              tabData.setGraphic(tabALabel);
+              
+             tabPane.getTabs().add(tabData);
+          }
+      });
     }
      
+    private void setTreeList(){
+     if (newValue.length()<oldValue.length() && newValue.equals("")){
+         (master.getGridPane()).getChildren().remove(master.getListView());       
+         (master.getGridPane()).getChildren().add(master.getTreeView());
+         }
+     if(newValue.length()>oldValue.length() && oldValue.equals("")){
+         (master.getGridPane()).getChildren().remove(master.getTreeView());  
+         (master.getGridPane()).getChildren().add(master.getListView());
+                
+            }
+    }
     public void handleSearchByKey(String oldVal, String newVal) {
         // If the number of characters in the text box is less than last time
         // it must be because the user pressed delete

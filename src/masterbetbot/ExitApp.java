@@ -1,7 +1,8 @@
 package masterbetbot;
 
-import javafx.application.Application;
-import static javafx.application.Application.launch;
+import demo.handler.GlobalAPI;
+import demo.util.APIContext;
+import demo.util.Display;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -17,6 +18,11 @@ import javafx.stage.StageStyle;
 import masterbetbot.Login.Response;
 
 public class ExitApp{   
+    private APIContext apiContext;
+    
+    public ExitApp(APIContext apiContext){
+        this.apiContext=apiContext;
+    }
     public void start(Stage primaryStage) throws Exception {
         showConfirmDialog(primaryStage, "MasterBetBot" );
      }
@@ -37,14 +43,12 @@ static class Dialog extends Stage {
     }
 }
 
-public static Response showConfirmDialog( Stage owner, String title) {
+public Response showConfirmDialog( Stage owner, String title) {
     VBox vb = new VBox();
     Scene scene = new Scene( vb, 300, 100 );
-     //scene.getStylesheets().add(MasterBetBot.class.getResource("projectcss.css").toExternalForm());
-     final Dialog dial = new Dialog( title, owner, scene);
+    final Dialog dial = new Dialog( title, owner, scene);
     
     BorderPane bp = new BorderPane();
-    
     GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -65,8 +69,21 @@ public static Response showConfirmDialog( Stage owner, String title) {
        grid.add(OKButton, 0,2);
        grid.add(CancelButton, 1,2);
 
+      OKButton.setOnAction((ActionEvent event)->{
+         try{
+            GlobalAPI.logout(apiContext);
+            }
+	catch (Exception e){
+            Display.showException("Failed to log out", e);
+            }
+         Display.println("Logout successful");
+         System.exit(0);
+        });
+       
     bp.setCenter( grid );
     HBox msg = new HBox();
+    vb.setStyle("-fx-base: rgb(50, 50, 50);\n" +
+                    "-fx-background: rgb(50, 50, 50);");
     vb.getChildren().addAll( msg, bp );
     dial.showDialog();
     return null;

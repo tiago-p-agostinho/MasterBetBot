@@ -1,7 +1,9 @@
 package masterbetbot;
 
+import demo.handler.GlobalAPI;
+import demo.util.APIContext;
+import demo.util.Display;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -12,13 +14,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class Login extends Application{
-
+    private final APIContext apiContext;
+    private String usernameResult;
+    private String passwordResult;
+    
+    public Login(APIContext apiContext){
+        this.apiContext=apiContext;
+    }
+    
     @Override
     public void start(Stage primaryStage) throws Exception {
          Response showMessageDialog = showConfirmDialog(primaryStage, "Login" );
@@ -44,11 +52,10 @@ static class Dialog extends Stage {
     }
 }
 
-public static Response showConfirmDialog( Stage owner, String title) {
-    VBox vb = new VBox();
-    Scene scene = new Scene( vb, 300, 100 );
-     //scene.getStylesheets().add(MasterBetBot.class.getResource("projectcss.css").toExternalForm());
-     final Dialog dial = new Dialog( title, owner, scene);
+public Response showConfirmDialog( Stage owner, String title) {
+    HBox hb = new HBox();
+    Scene scene = new Scene( hb, 300, 100 );
+    final Dialog dial = new Dialog( title, owner, scene);
     
     BorderPane bp = new BorderPane();
     
@@ -60,20 +67,17 @@ public static Response showConfirmDialog( Stage owner, String title) {
         username.setPromptText("Username");
         PasswordField password = new PasswordField(); 
         password.setPromptText("Password");
-
-         Button OKButton = new Button("OK");
+        
+        Button OKButton = new Button("OK");
         OKButton.setOnAction((ActionEvent event)->{
-           final String usernameResult = username.getText();
-           final String passwordResult = password.getText();
-           System.exit(0);
+            getValidation(username.getText(), password.getText());
+            dial.hide();
+            owner.show();
         });
         
         Button CancelButton = new Button("Cancel");
         CancelButton.setOnAction((ActionEvent event)->{
-           final String usernameResult = username.getText();
-           final String passwordResult = password.getText();
-           dial.hide();
-           owner.show();
+           System.exit(0);
         });
         
         grid.add(new Label("Username:"), 0, 0);
@@ -85,12 +89,27 @@ public static Response showConfirmDialog( Stage owner, String title) {
 
     bp.setCenter( grid );
     HBox msg = new HBox();
-    vb.getChildren().addAll( msg, bp );
+    hb.setStyle("-fx-base: rgb(50, 50, 50);\n" +
+                "-fx-background: rgb(50, 50, 50);\n" +
+                "-fx-control-inner-background:  rgb(50, 50, 50);");
+    hb.getChildren().addAll( msg, bp );
     dial.showDialog();
     return buttonSelected;
-}
-
-public static void main(String[] args) {
-        launch(args);
     }
+
+public void getValidation(String username, String password){
+    			
+    // Perform the login before anything else.
+    try{
+	GlobalAPI.login(apiContext, username, password);
+	System.out.println("Welcome to the Betfair API Demo " + username);
+	}
+    catch (Exception e){
+        // If we can't log in for any reason, just exit.
+        System.out.println("Welcome to the Betfair API Demo ********" + username);
+	Display.showException("*** Failed to log in", e);
+	System.exit(1);
+		}   
+    }
+
 }

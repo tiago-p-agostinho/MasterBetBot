@@ -5,32 +5,39 @@ package masterbetbot;
  * @author tiagoagostinho
  */
 
+import demo.util.APIContext;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.control.MenuBar;
+import javafx.stage.WindowEvent;
  
-public class MenuBarMBB extends Application {
+public class MenuBarMBB{
  MenuBar menuBar = new MenuBar();
+ private APIContext apiContext;
  
-    public static void main(String[] args) {
-        launch(args);
-    }
- 
-    @Override
+ public MenuBarMBB(APIContext apiContext){
+     this.apiContext=apiContext;
+ }
     public void start(Stage stage) {
-        
- 
-        final VBox vbox = new VBox();
+       final VBox vbox = new VBox();
        // --- Menu File
         Menu menuFile = new Menu("File");
         MenuItem exit = new MenuItem("Exit");
-            exit.setOnAction((ActionEvent t) -> {
-                System.exit(0);
-        });      
+            exit.setOnAction((ActionEvent t) -> { 
+                ExitApp sair = new ExitApp(apiContext);
+                try {
+                    sair.start(stage);
+                }catch (Exception ex) {
+                    Logger.getLogger(MasterBetBot.class.getName()).log(Level.SEVERE, null, ex);
+                }
+         });      
         exit.setAccelerator(KeyCombination.keyCombination("Alt+F4"));
             
         menuFile.getItems().addAll(exit);

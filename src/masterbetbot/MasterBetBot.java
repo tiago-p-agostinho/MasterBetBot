@@ -1,10 +1,12 @@
 package masterbetbot;
- 
-import java.io.File;
+
+import demo.handler.ExchangeAPI;
+import demo.handler.GlobalAPI;
+import demo.util.APIContext;
+import demo.util.Display;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,22 +24,28 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.Image; 
+import javafx.scene.image.ImageView; 
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane; 
-import javafx.scene.layout.VBox; 
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox; 
 import javafx.scene.paint.Color; 
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import masterbetbot.threads.BalanceThread;
 
 public class MasterBetBot extends Application {
  private TreeView treeView;
  private ListView listView;
  private GridPane grid;
  private TabPane tabPane;
- public static void main(String[] args) {
+ final private static ExchangeAPI.Exchange exchange = ExchangeAPI.Exchange.UK;
+ 
+// The session token
+ private static APIContext apiContext = new APIContext();
+
+ public static void main(String[] args) { 
       launch(args);
   }
   
@@ -54,22 +62,18 @@ public class MasterBetBot extends Application {
       primaryStage.setWidth(bounds.getWidth());
       primaryStage.setHeight(bounds.getHeight());
       
-    
-
-primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-    @Override
-    public void handle(WindowEvent event) {
-        ExitApp exit = new ExitApp();
-        try {
-            exit.start(primaryStage);
-        } catch (Exception ex) {
-            Logger.getLogger(MasterBetBot.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        event.consume();
-    }
-});
-   
-      
+      primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        @Override
+            public void handle(WindowEvent event) {
+                ExitApp exit = new ExitApp(apiContext);
+                try {
+                    exit.start(primaryStage);
+                } catch (Exception ex) {
+                    Logger.getLogger(MasterBetBot.class.getName()).log(Level.SEVERE, null, ex);
+               }
+             event.consume();
+            }
+        });   
       width=primaryStage.getX();
       height=primaryStage.getY();
     
@@ -79,13 +83,13 @@ primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       grid.setVgap(5);
       grid.setPadding(new Insets(0, 10, 0, 10));
       
-      MenuBarMBB menuBarMBB = new MenuBarMBB();
+      MenuBarMBB menuBarMBB = new MenuBarMBB(apiContext);
       menuBarMBB.start(primaryStage);
       MenuBar menuBar = menuBarMBB.getMenuBar();
       GridPane.setConstraints(menuBar,0,0,51,1);
         
       String workingDir = System.getProperty("user.dir");
-      Image img = new Image("file:\\" + workingDir + "\\src\\logo_png.png");
+      Image img = new Image("file:\\" + workingDir + "\\src\\masterbetbot\\logo_png.png");
       
       ImageView imgView = new ImageView(img);
       imgView.setFitWidth(225);
@@ -98,7 +102,6 @@ primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       treeView = tm.getTreeView();
       GridPane.setConstraints(treeView, 1, 7, 8, 115);
     
-      
       final Separator sepVertLeftImage = new Separator();
       sepVertLeftImage.setOrientation(Orientation.VERTICAL);
       sepVertLeftImage.setValignment(VPos.CENTER);
@@ -139,7 +142,7 @@ primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       DoubleTextField euroText = new DoubleTextField("2.00");
       euroText.setPrefWidth(75);
       GridPane.setConstraints(euroText, 18, 1, 1, 1);
-       
+      
       Label eurosLabel = new Label("€");
       GridPane.setConstraints(eurosLabel, 19, 1, 1, 1);
       
@@ -167,7 +170,7 @@ primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       
       Label userNameLabel = new Label("UserName:");
       GridPane.setConstraints(userNameLabel, 22, 1);
-      Label userNameField = new Label("MRtinho");
+      Label userNameField = new Label("Unknown");
       userNameField.setPrefWidth(75);
       GridPane.setConstraints(userNameField, 23, 1);  
       
@@ -238,12 +241,12 @@ primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
               treeView,tabPane, scroll, textField, eurosLabel, euroText);
       bp.setCenter(grid);
         
-        VBox root = new VBox();
-        root.getChildren().addAll(grid);
-        Scene scene = new Scene(root, width, height, Color.BLACK);
-        scene.getStylesheets().clear();
-       
-        primaryStage.setScene(scene);
+      HBox root = new HBox();
+      root.setStyle("-fx-base: rgb(50, 50, 50);\n" +
+                    "-fx-background: rgb(50, 50, 50);");
+      root.getChildren().addAll(grid);
+      Scene scene = new Scene(root, width, height, Color.BLACK);
+      primaryStage.setScene(scene);
    
         /*
       TabPane tabPane = new TabPane();
@@ -289,8 +292,12 @@ primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
       primaryStage.setScene(scene); */
       
       primaryStage.show();
-      Login login = new Login();
+      Login login = new Login(apiContext);
       login.start(primaryStage);
+     
+     Thread balance = new Thread(new BalanceThread(apiContext, balanceField));
+     balance.start(); 
+     // balanceField.setText("dsdas");
   }
 
   public TreeView getTreeView(){
