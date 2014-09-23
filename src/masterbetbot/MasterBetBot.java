@@ -4,9 +4,11 @@ import demo.handler.ExchangeAPI;
 import demo.handler.GlobalAPI;
 import demo.util.APIContext;
 import demo.util.Display;
+import generated.exchange.BFExchangeServiceStub;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -40,11 +42,18 @@ public class MasterBetBot extends Application {
  private ListView listView;
  private GridPane grid;
  private TabPane tabPane;
- final private static ExchangeAPI.Exchange exchange = ExchangeAPI.Exchange.UK;
- 
-// The session token
- private static APIContext apiContext = new APIContext();
+ private  Label balanceField;
+         
+ private static ExchangeAPI.Exchange exchange;
+ private static APIContext apiContext;
+ private BFExchangeServiceStub.GetAccountFundsResp funds;
 
+ public MasterBetBot(){
+     apiContext = new APIContext();
+     exchange = ExchangeAPI.Exchange.UK;
+     
+ }
+ 
  public static void main(String[] args) { 
       launch(args);
   }
@@ -183,7 +192,7 @@ public class MasterBetBot extends Application {
         
       Label balanceLabel = new Label("Balance:");
       GridPane.setConstraints(balanceLabel, 22, 3);
-      Label balanceField = new Label("NaN"+" €");
+      balanceField = new Label("NaN"+" €");
       balanceField.setAlignment(Pos.CENTER_LEFT);
       balanceField.setPrefWidth(50);
       GridPane.setConstraints(balanceField, 23, 3);
@@ -292,11 +301,33 @@ public class MasterBetBot extends Application {
       primaryStage.setScene(scene); */
       
       primaryStage.show();
-      Login login = new Login(apiContext);
+      Login login = new Login(apiContext, funds, exchange);
       login.start(primaryStage);
      
-     Thread balance = new Thread(new BalanceThread(apiContext, balanceField));
-     balance.start(); 
+      Platform.runLater(new Runnable() {
+        @Override
+        public void run() {
+             while(true){
+         System.out.println("ola1");   
+        double money = funds.getAvailBalance();
+        String moneyString = Double.toString(money);
+        System.out.println(Double.toString(money));
+        System.out.println("ola2");
+        balanceField.setText(moneyString);
+        
+        System.out.println("ola3");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BalanceThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+            }
+        });
+      
+      
+     //Thread balance = new Thread(new BalanceThread(apiContext, balanceField));
+     //balance.start(); 
      // balanceField.setText("dsdas");
   }
 

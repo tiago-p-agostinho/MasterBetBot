@@ -1,8 +1,12 @@
 package masterbetbot;
 
+import demo.handler.ExchangeAPI;
 import demo.handler.GlobalAPI;
 import demo.util.APIContext;
 import demo.util.Display;
+import generated.exchange.BFExchangeServiceStub;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -22,9 +26,14 @@ public class Login extends Application{
     private final APIContext apiContext;
     private String usernameResult;
     private String passwordResult;
+    private  BFExchangeServiceStub.GetAccountFundsResp funds;
+    private static ExchangeAPI.Exchange exchange;
     
-    public Login(APIContext apiContext){
+            public Login(APIContext apiContext, BFExchangeServiceStub.GetAccountFundsResp 
+            funds, ExchangeAPI.Exchange exchange){
         this.apiContext=apiContext;
+        this.funds = funds;
+        this.exchange = exchange; 
     }
     
     @Override
@@ -70,7 +79,11 @@ public Response showConfirmDialog( Stage owner, String title) {
         
         Button OKButton = new Button("OK");
         OKButton.setOnAction((ActionEvent event)->{
+        try {
             getValidation(username.getText(), password.getText());
+        } catch (Exception ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
             dial.hide();
             owner.show();
         });
@@ -97,7 +110,7 @@ public Response showConfirmDialog( Stage owner, String title) {
     return buttonSelected;
     }
 
-public void getValidation(String username, String password){
+public void getValidation(String username, String password) throws Exception{
     			
     // Perform the login before anything else.
     try{
@@ -110,6 +123,8 @@ public void getValidation(String username, String password){
 	Display.showException("*** Failed to log in", e);
 	System.exit(1);
 		}   
+    
+    funds = ExchangeAPI.getAccountFunds(exchange, apiContext);
     }
 
 }
