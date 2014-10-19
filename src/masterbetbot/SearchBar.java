@@ -1,5 +1,9 @@
 package masterbetbot;
 
+import demo.handler.GlobalAPI;
+import demo.util.APIContext;
+import generated.global.BFGlobalServiceStub;
+import generated.global.BFGlobalServiceStub.EventType;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -9,7 +13,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 
 public class SearchBar {
@@ -19,10 +22,12 @@ public class SearchBar {
    private final MasterBetBot master;
    String newValue;
    String oldValue;
-   public SearchBar(MasterBetBot master){
+   private final APIContext apiContext;
+   public SearchBar(MasterBetBot master, APIContext apiContext){
        this.master=master;
+       this.apiContext = apiContext;
    }
-    public void start() {  
+    public void start() throws Exception {  
         
         txt.setPromptText("Search");
         txt.textProperty().addListener(
@@ -39,14 +44,11 @@ public class SearchBar {
             });
         txt.setFocusTraversable(false);
        
-        // Populate the list's entries
-        for ( int i = 0; i < 100; i++ ) {
-            entries.add("Item " + i);
+        BFGlobalServiceStub.EventType[] types = GlobalAPI.getActiveEventTypes(apiContext);
+        for(EventType type: types){
+            entries.add(type.getName());
         }
-        entries.add("Eric J. Bruno");
-        entries.add("Joseph Bruno");
-        entries.add("Ashley Bruno");
-        entries.add("Brandon Bruno");
+        
         list.setItems( entries );
         list.setOnMouseClicked((MouseEvent mouseEvent) -> {
           if(mouseEvent.getClickCount() == 2){

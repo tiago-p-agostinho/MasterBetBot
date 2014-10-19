@@ -26,13 +26,10 @@ public class Login extends Application{
     private final APIContext apiContext;
     private String usernameResult;
     private String passwordResult;
-    private  BFExchangeServiceStub.GetAccountFundsResp funds;
     private static ExchangeAPI.Exchange exchange;
     
-            public Login(APIContext apiContext, BFExchangeServiceStub.GetAccountFundsResp 
-            funds, ExchangeAPI.Exchange exchange){
+    public Login(APIContext apiContext, ExchangeAPI.Exchange exchange){
         this.apiContext=apiContext;
-        this.funds = funds;
         this.exchange = exchange; 
     }
     
@@ -79,7 +76,8 @@ public Response showConfirmDialog( Stage owner, String title) {
         
         Button OKButton = new Button("OK");
         OKButton.setOnAction((ActionEvent event)->{
-        try {
+            usernameResult= username.getText();
+            try {
             getValidation(username.getText(), password.getText());
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,7 +113,7 @@ public void getValidation(String username, String password) throws Exception{
     // Perform the login before anything else.
     try{
 	GlobalAPI.login(apiContext, username, password);
-	System.out.println("Welcome to the Betfair API Demo " + username);
+        System.out.println("Welcome to the Betfair API Demo " + username);
 	}
     catch (Exception e){
         // If we can't log in for any reason, just exit.
@@ -124,7 +122,10 @@ public void getValidation(String username, String password) throws Exception{
 	System.exit(1);
 		}   
     
-    funds = ExchangeAPI.getAccountFunds(exchange, apiContext);
     }
+
+public String getUserName(){
+    return usernameResult;
+}
 
 }

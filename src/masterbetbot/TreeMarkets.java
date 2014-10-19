@@ -1,9 +1,15 @@
 package masterbetbot;
 
-import java.util.Arrays;
-import java.util.List;
-import javafx.beans.property.SimpleStringProperty;
+import demo.handler.GlobalAPI;
+import demo.util.APIContext;
+import generated.global.BFGlobalServiceStub;
+import generated.global.BFGlobalServiceStub.BFEvent;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
@@ -11,112 +17,167 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
 public class TreeMarkets {
-    TreeView<String> treeView = new TreeView<>();
     private MasterBetBot master;
-    
-    List<Employee> employees = Arrays.<Employee>asList(
-            new Employee("Ethan Williams", "Sales Department"),
-            new Employee("Emmasadhjkasjhdjksahdsahdes", "Sfsdfsdfsdfsdfdsfsdtment"),
-            new Employee("Michael Brown", "Sales Department"),
-            new Employee("Anna Black", "Sales Department"),
-            new Employee("Rodger York", "Sales Department"),
-            new Employee("Susdsfsdfsdfsdfdsfdsfsdfdsfsdfdsfsdfsdfllins", "Salesdfdsfdsfdsfdsfdsfdstment"),
-            new Employee("Mike Graham", "IT Support"),
-            new Employee("Judy Mayer", "IT Support"),
-            new Employee("Gregofdsfsdfdsfdsfsdfdsfdsfsdfsdfsdfdsfsdfdsfdsfdsfdsfdsfsdfsdith", "IT Support"),
-            new Employee("Jacob Smith", "Accounts Department"),
-            new Employee("Isabesdason", "Accounts Department"),
-            new Employee("Esadsaliams", "Sales Department"),
-            new Employee("Emasdases", "Sales Department"),
-            new Employee("MiasdBrown", "Sales Department"),
-            new Employee("Anasdasdack", "Sales Department"),
-            new Employee("Rodsadork", "Sales Department"),
-            new Employee("dsad", "Sales Department"),
-            new Employee("Mikcxcxzham", "IT Support"),
-            new Employee("Judcxcyer", "IT Support"),
-            new Employee("Gregorkdfjaskldjaskjdkasjkldcmith", "IT Support"),
-            new Employee("Gregsdasth", "IT Support"),
-            new Employee("Greasdmith", "IT Support"),
-            new Employee("Gregsdascmith", "IT Support"),
-            new Employee("Gresaddazcmith", "IT Support"),
-            new Employee("Gregorxzcmith", "IT Support"),
-            new Employee("Jacoxczmith", "Accounts Department"),
-            new Employee("Isabellzhnson", "Accounts Department"));
+    private BFGlobalServiceStub.EventType[] types;
+    private APIContext apiContext;
+    private TreeItem<String> rootNode = new TreeItem<>();
+    private TreeView<String> treeView = new TreeView<>(rootNode);
+    private BFGlobalServiceStub.GetEventsResp resp;  
+    private BFGlobalServiceStub.GetEventsResp respHandler;  
+    private TreeItem<String> typeSport;
+    private TreeItem<String> initialization = new TreeItem<String>(" "); 
    
-    TreeItem<String> rootNode = 
-        new TreeItem<>("MyCompany Human Resources", null);
-  
-    public TreeMarkets(MasterBetBot mbb){
+    private Hashtable<String, Integer> listEventNames = new Hashtable<String, Integer>();
+    
+    public TreeMarkets(MasterBetBot mbb, APIContext apiContext){
         this.master=mbb;
+        this.apiContext = apiContext;
     }
     
-    public void start() {
-      for (Employee employee : employees) {
-            TreeItem<String> empLeaf = new TreeItem<>(employee.getName());
-            empLeaf.setExpanded(true);
-            boolean found = false;
-            for (TreeItem<String> depNode : rootNode.getChildren()) {
-                if (depNode.getValue().contentEquals(employee.getDepartment())){
-                    depNode.getChildren().add(empLeaf);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                TreeItem<String> depNode = new TreeItem<>(
-                    employee.getDepartment()
-                );
-                rootNode.getChildren().add(depNode);
-                depNode.getChildren().add(empLeaf);
-            }
-        }
-
-      treeView = new TreeView<>(rootNode);
+    public void start() throws Exception {       
+        
+        rootNode.setExpanded(true);
+        treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);  
+ 
+        TreeItem<String> depNode = new TreeItem<>();
+        BFGlobalServiceStub.GetEventsResp resp;
+       
+        types = GlobalAPI.getActiveEventTypes(apiContext);
+        for(BFGlobalServiceStub.EventType type : types){
+            listEventNames.put(type.getName(), type.getId());
+            typeSport = new TreeItem<>(type.getName());
+            rootNode.getChildren().add(typeSport);
+            typeSport.getChildren().add(initialization);
+            
+            typeSport.expandedProperty().addListener((ObservableValue<? extends Boolean> observable,
+                    Boolean oldValue, Boolean newValue) -> {
+                preencheNodes(typeSport);
+            });
+            
+           
+          }
+        
+      treeView.setShowRoot(false);
       treeView.setOnMouseClicked((MouseEvent mouseEvent) -> {
-          if(mouseEvent.getClickCount() == 2){
-              TreeItem<String> item = (TreeItem<String>) treeView.getSelectionModel().
+         int eventID=0;
+          TreeItem<String> itemLeaf;
+          TreeItem<String> item; 
+          
+          
+          if(mouseEvent.getClickCount() == 1){
+            item = (TreeItem<String>) treeView.getSelectionModel().
                       getSelectedItem();
-              System.out.println("Selected Text : " + item.getValue());
-              
+            
+            preencheNodes(item);
+          
+         /*   if(item.getChildren().contains(initialization)){
+                item.getChildren().remove(initialization);
+                System.out.println("initialization removido");
+            }
+            
+           if(listEventNames.containsKey(item.getValue())){
+               eventID = listEventNames.get(item.getValue());
+           }
+               
+            try{
+            respHandler = GlobalAPI.getEvents(apiContext, eventID);
+            }
+            catch(Exception e){
+                e.getMessage();
+            }
+            BFEvent[] events = respHandler.getEventItems().getBFEvent();
+            if (events == null) {
+                System.out.println("chegamos aos mercados!");
+		events = new BFEvent[] {};
+            } else {
+		ArrayList<BFEvent> nonCouponEvents = new ArrayList<BFEvent>(events.length);
+		for(BFEvent e: events) {
+                    if(!e.getEventName().equals("Coupons")) {
+			nonCouponEvents.add(e);
+                    }
+                }
+			events = (BFEvent[]) nonCouponEvents.toArray(new BFEvent[]{});
+            }
+            
+            for(BFEvent eventIteration : events){
+                itemLeaf = new TreeItem<>(eventIteration.getEventName());
+                listEventNames.put( eventIteration.getEventName(),eventIteration.getEventId());
+                item.getChildren().add(itemLeaf);
+                itemLeaf.getChildren().add(initialization);
+                
+                
+               
+                System.out.println(itemLeaf.getValue());
+               }
+             
               // Create New Tab
               Tab tabData = new Tab();
               TabPane tabPane = master.getTabPane();
-              Label tabALabel = new Label("Test");
+              Label tabALabel = new Label(item.getValue());
               tabData.setGraphic(tabALabel);
               
-             tabPane.getTabs().add(tabData);
+             tabPane.getTabs().add(tabData); */
           }
       });
-    }
- 
+     } 
+
+    
     public TreeView getTreeView(){
       return treeView;
     }
-    
-    public static class Employee {
- 
-        private final SimpleStringProperty name;
-        private final SimpleStringProperty department;
- 
-        private Employee(String name, String department) {
-            this.name = new SimpleStringProperty(name);
-            this.department = new SimpleStringProperty(department);
-        }
- 
-        public String getName() {
-            return name.get();
-        }
- 
-        public void setName(String fName) {
-            name.set(fName);
-        }
- 
-        public String getDepartment() {
-            return department.get();
-        }
- 
-        public void setDepartment(String fName) {
-            department.set(fName);
-        }
+
+    public void preencheNodes(TreeItem<String> item){
+        int eventID = 0;
+        TreeItem<String> itemLeaf;
+        
+        if(item.getChildren().contains(initialization)){
+                item.getChildren().remove(initialization);
+                System.out.println("initialization removido");
+            }
+            
+           if(listEventNames.containsKey(item.getValue())){
+               eventID = listEventNames.get(item.getValue());
+           }
+               
+            try{
+            respHandler = GlobalAPI.getEvents(apiContext, eventID);
+            }
+            catch(Exception e){
+                e.getMessage();
+            }
+            BFEvent[] events = respHandler.getEventItems().getBFEvent();
+            if (events == null) {
+                System.out.println("chegamos aos mercados!");
+		events = new BFEvent[] {};
+            } else {
+		ArrayList<BFEvent> nonCouponEvents = new ArrayList<BFEvent>(events.length);
+		for(BFEvent e: events) {
+                    if(!e.getEventName().equals("Coupons")) {
+			nonCouponEvents.add(e);
+                    }
+                }
+			events = (BFEvent[]) nonCouponEvents.toArray(new BFEvent[]{});
+            }
+            
+            for(BFEvent eventIteration : events){
+                itemLeaf = new TreeItem<>(eventIteration.getEventName());
+                listEventNames.put( eventIteration.getEventName(),eventIteration.getEventId());
+                item.getChildren().add(itemLeaf);
+                itemLeaf.getChildren().add(initialization);
+                
+                
+               
+                System.out.println(itemLeaf.getValue());
+               }
+             
+              // Create New Tab
+              Tab tabData = new Tab();
+              TabPane tabPane = master.getTabPane();
+              Label tabALabel = new Label(item.getValue());
+              tabData.setGraphic(tabALabel);
+              
+             tabPane.getTabs().add(tabData); 
+        
     }
+
 }

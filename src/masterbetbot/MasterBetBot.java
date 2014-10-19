@@ -1,14 +1,16 @@
 package masterbetbot;
 
 import demo.handler.ExchangeAPI;
-import demo.handler.GlobalAPI;
 import demo.util.APIContext;
-import demo.util.Display;
 import generated.exchange.BFExchangeServiceStub;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,7 +37,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import masterbetbot.threads.BalanceThread;
 
 public class MasterBetBot extends Application {
  private TreeView treeView;
@@ -44,8 +45,8 @@ public class MasterBetBot extends Application {
  private TabPane tabPane;
  private  Label balanceField;
          
- private static ExchangeAPI.Exchange exchange;
- private static APIContext apiContext;
+ private ExchangeAPI.Exchange exchange;
+ private APIContext apiContext;
  private BFExchangeServiceStub.GetAccountFundsResp funds;
 
  public MasterBetBot(){
@@ -105,11 +106,7 @@ public class MasterBetBot extends Application {
       imgView.setFitHeight(70);
       GridPane.setConstraints(imgView, 1, 1, 8, 3);
       grid.getChildren().add(imgView);
-      
-      TreeMarkets tm = new TreeMarkets(this);
-      tm.start();
-      treeView = tm.getTreeView();
-      GridPane.setConstraints(treeView, 1, 7, 8, 115);
+     
     
       final Separator sepVertLeftImage = new Separator();
       sepVertLeftImage.setOrientation(Orientation.VERTICAL);
@@ -132,8 +129,7 @@ public class MasterBetBot extends Application {
       GridPane.setRowSpan(sepVertRightImage, 5);
       grid.getChildren().add(sepVertRightImage);
       
-      SearchBar searchBar = new SearchBar(this);
-      searchBar.start();
+      SearchBar searchBar = new SearchBar(this, apiContext);
       TextField textField = searchBar.getTextField();
       textField.setPrefWidth(225);
       GridPane.setConstraints(textField,10,1,6,1);
@@ -246,8 +242,12 @@ public class MasterBetBot extends Application {
       GridPane.setRowSpan(sepVertRightAccordion, 118);
       grid.getChildren().add(sepVertRightAccordion);
      
-      grid.getChildren().addAll(menuBar,stakeLabel,stakeButton,userNameLabel,userNameField, balanceLabel,balanceField,
-              treeView,tabPane, scroll, textField, eurosLabel, euroText);
+      TreeMarkets tm = new TreeMarkets(this, apiContext);
+      treeView = tm.getTreeView();
+      GridPane.setConstraints(treeView, 1, 7, 8, 115);
+       
+      grid.getChildren().addAll(menuBar,stakeLabel,stakeButton,userNameLabel,userNameField, 
+              balanceLabel,balanceField, treeView,tabPane, scroll, textField, eurosLabel, euroText);
       bp.setCenter(grid);
         
       HBox root = new HBox();
@@ -301,34 +301,33 @@ public class MasterBetBot extends Application {
       primaryStage.setScene(scene); */
       
       primaryStage.show();
-      Login login = new Login(apiContext, funds, exchange);
+      Login login = new Login(apiContext, exchange);
       login.start(primaryStage);
-     
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-             while(true){
-         System.out.println("ola1");   
-        double money = funds.getAvailBalance();
-        String moneyString = Double.toString(money);
-        System.out.println(Double.toString(money));
-        System.out.println("ola2");
-        balanceField.setText(moneyString);
-        
-        System.out.println("ola3");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(BalanceThread.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-            }
-        });
+      userNameField.setText(login.getUserName());
+      searchBar.start();
+      tm.start();
       
       
-     //Thread balance = new Thread(new BalanceThread(apiContext, balanceField));
-     //balance.start(); 
-     // balanceField.setText("dsdas");
+ Timer timer = new java.util.Timer();
+ timer.schedule(new TimerTask() {
+    @Override
+    public void run() {
+         Platform.runLater(() -> {
+               try {
+                funds = ExchangeAPI.getAccountFunds(exchange, apiContext);
+            } catch (Exception ex) {
+                Logger.getLogger(MasterBetBot.class.getName()).log(Level.SEVERE, null, ex);
+            }  
+              double money = funds.getAvailBalance();
+              String moneyString = Double.toString(money) + " €";
+              
+             StringProperty message = new SimpleStringProperty();
+             message.setValue(moneyString);
+             balanceField.textProperty().bind(message);
+         });
+    }
+}, 0, 2000);
+  
   }
 
   public TreeView getTreeView(){

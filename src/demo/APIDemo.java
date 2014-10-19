@@ -3,8 +3,6 @@ import java.util.*;
 import java.text.*;
 import java.lang.*;
 import java.math.*;
-
-
 import demo.handler.ExchangeAPI;
 import demo.handler.GlobalAPI;
 import demo.handler.ExchangeAPI.Exchange;

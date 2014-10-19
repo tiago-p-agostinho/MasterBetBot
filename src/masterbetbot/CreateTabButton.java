@@ -19,8 +19,8 @@ public class CreateTabButton extends Application {
     @Override
     public void start(Stage primaryStage) {
         final   Tab tab3 = new Tab();
-        tab3.setText("Green");
-        tab3.setContent(new Rectangle(750, 575, Color.GREEN));
+        tab3.setText("GREY");
+        tab3.setContent(new Rectangle(750, 575, Color.GREY));
         tabPane.getTabs().add(tab3);
 
         /*
